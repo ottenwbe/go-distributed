@@ -1,5 +1,7 @@
 # go-distributed
 
+[![Build Status](https://travis-ci.org/ottenwbe/go-distributed.svg?branch=master)](https://travis-ci.org/ottenwbe/go-distributed)
+
 Go implementations of distributed paradigms and algorithms.
 
 ## What paradigms/algorithms are implemented?
@@ -16,6 +18,7 @@ git clone https://github.com/ottenwbe/go-distributed.git
 
 ### Structure
 
+```
 .
 ├── client-server   // client server demo
 ├── go.mod          
@@ -24,6 +27,7 @@ git clone https://github.com/ottenwbe/go-distributed.git
 ├── Makefile
 ├── README.md       // this
 └── vendor          // all vendored files
+```
  
 # Build
 
