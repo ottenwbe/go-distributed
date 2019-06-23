@@ -8,6 +8,7 @@ go:
 install:
   - go get -u github.com/onsi/ginkgo/ginkgo
   - go get -u github.com/onsi/gomega/...
+  - go get
 
 script:
   - cd client-server && ginkgo
