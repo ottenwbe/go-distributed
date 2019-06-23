@@ -4,82 +4,46 @@ import (
 	"bufio"
 	"fmt"
 	"net"
-	"os"
-
-	log "github.com/sirupsen/logrus"
 )
 
-func main() {
+// Client is a simple ping server
+type Client struct {
+	conn net.Conn
+}
 
-	// get server address
-	serverAddress := determineServerAddress()
+// NewClient creates a non initialized client
+func NewClient() *Client {
+	return &Client{}
+}
 
+// CallServer sends a message to the server and returns the corresponding response
+func (c *Client) CallServer(msg string) (string, error) {
+	// send a message
+	_, err := fmt.Fprintf(c.conn, msg+"\n")
+	if err != nil {
+		return "", err
+	}
+
+	// receive and handle message
+	message, err := bufio.NewReader(c.conn).ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+
+	return message, err
+}
+
+// Connect to the server with the given address
+func (c *Client) Connect(serverAddress string) (err error) {
 	// connect to server
-	conn, err := net.Dial("tcp", serverAddress)
-	if err != nil {
-		log.WithError(err).Error("Error while connecting to server.")
-		os.Exit(1)
-	}
-
-	// send and receive messages in a loop
-	err = messageLoop(conn)
-	if err != nil {
-		log.WithError(err).Error("Error in Message Loop.")
-		os.Exit(2)
-	}
-}
-
-func determineServerAddress() string {
-	const defaultAddress = ":8081"
-	serverAddress := readAddress(defaultAddress)
-	serverAddress = checkForDefaultAddress(serverAddress, defaultAddress)
-	return serverAddress
-}
-
-func readAddress(defaultAddress string) string {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf("Enter the server's address [default: '%v']: ", defaultAddress)
-	serverAddress, err := reader.ReadString('\n')
-	if err != nil {
-		log.WithError(err).Warn("Could not read server address from input")
-		serverAddress = ""
-	}
-	return serverAddress
-}
-
-func checkForDefaultAddress(serverAddress string, defaultAddress string) string {
-	if serverAddress == "" {
-		return defaultAddress
-	}
-	return serverAddress
-}
-
-func messageLoop(conn net.Conn) error {
-	var (
-		err     error
-		scanner = bufio.NewScanner(os.Stdin)
-	)
-	for err == nil && scanner.Scan() {
-		err = sendMessage(scanner, conn)
-		if err != nil {
-			err = waitForReplyMessage(conn)
-		}
-	}
-	if err != nil {
-		err = scanner.Err()
-	}
+	c.conn, err = net.Dial("tcp", serverAddress)
 	return err
 }
 
-func sendMessage(scanner *bufio.Scanner, conn net.Conn) error {
-	fmt.Print("Text to send: ")
-	msg := scanner.Text()
-	_, err := fmt.Fprintf(conn, msg+"\n")
-	return err
-}
-
-func waitForReplyMessage(conn net.Conn) error {
-	message, err := bufio.NewReader(conn).ReadString('\n')
-	fmt.Printf("Message from server: %v", message)
-	return err
+// Close shuts down the connection to the server
+func (c *Client) Close() error {
+	if c.conn != nil {
+		return c.conn.Close()
+	}
+	return nil
 }

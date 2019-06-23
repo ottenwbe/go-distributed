@@ -1,0 +1,13 @@
+language: go
+
+go:
+- 1.11.x
+- 1.12.x
+
+
+install:
+  - go get -u github.com/onsi/ginkgo/ginkgo
+  - go get -u github.com/onsi/gomega/...
+
+script:
+  - cd client-server && ginkgo
