@@ -10,4 +10,6 @@ install:
   - go get -u github.com/onsi/gomega/...
 
 script:
-  - env GO111MODULE=on ginkgo client-server
+  - env GO111MODULE=on make lint
+  - env GO111MODULE=on make vet
+  - env GO111MODULE=on make test

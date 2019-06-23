@@ -31,6 +31,14 @@ git clone https://github.com/ottenwbe/go-distributed.git
  
 # Build
 
+Use the makefile to build all projects
+
+```
+make build
+```
+
+or build just one of the projects
+
 ```
 go build -o clientServer client-server/*.go 
 ```
@@ -42,6 +50,6 @@ We use [ginkgo](https://github.com/onsi/ginkgo) for testing.
 ```
 go get -u github.com/onsi/ginkgo/ginkgo  
 go get -u github.com/onsi/gomega/...     
-cd client-server
-ginkgo
+
+make test
 ```

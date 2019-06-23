@@ -14,4 +14,3 @@ func exitOnError(err error, code int) {
 		exitFunc(code)
 	}
 }
-
