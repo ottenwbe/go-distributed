@@ -1,8 +1,11 @@
 # go-distributed
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.org/ottenwbe/go-distributed.svg?branch=master)](https://travis-ci.org/ottenwbe/go-distributed)
 
-Go implementations of distributed paradigms and algorithms.
+In the age of cloud computing, micro services, and IoT, distributed systems are everywhere. Oftentimes the heavy lifting that distributed systems do is hidden behind layers of layers of abstractions. 
+
+This repository has Go implementations of distributed paradigms and algorithms. All implementations are small demo apps that show the power of distributed computing.
 
 ## What paradigms/algorithms are implemented?
 
@@ -10,7 +13,7 @@ Go implementations of distributed paradigms and algorithms.
 
 ## Develop
 
-Get this repo 
+Get this repo:
 
 ```
 git clone https://github.com/ottenwbe/go-distributed.git
@@ -29,21 +32,21 @@ git clone https://github.com/ottenwbe/go-distributed.git
 └── vendor          // all vendored files
 ```
  
-# Build
+### Build
 
-Use the makefile to build all projects
+Use the makefile to build all demos
 
 ```
 make build
 ```
 
-or build just one of the projects
+or build just one of the deoms directly
 
 ```
 go build -o clientServer client-server/*.go 
 ```
 
-# Test
+### Test
 
 We use [ginkgo](https://github.com/onsi/ginkgo) for testing.
 
@@ -53,3 +56,7 @@ go get -u github.com/onsi/gomega/...
 
 make test
 ```
+
+## License
+
+go-distributed is MIT-Licensed

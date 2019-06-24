@@ -11,6 +11,6 @@ require (
 	golang.org/x/lint v0.0.0-20190409202823-959b441ac422 // indirect
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
 	golang.org/x/sys v0.0.0-20190620070143-6f217b454f45 // indirect
-	golang.org/x/text v0.3.2
+	golang.org/x/text v0.3.2 // indirect
 	golang.org/x/tools v0.0.0-20190620191750-1fa568393b23 // indirect
 )

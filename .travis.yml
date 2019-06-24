@@ -8,6 +8,7 @@ go:
 install:
   - go get -u github.com/onsi/ginkgo/ginkgo
   - go get -u github.com/onsi/gomega/...
+  - go get -u golang.org/x/lint/golint
 
 script:
   - env GO111MODULE=on make lint
