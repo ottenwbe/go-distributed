@@ -1,5 +1,6 @@
 BIN 	= $(GOPATH)/bin
 GO      = go
+GET     = $(GO) get
 GOTEST  = $(BIN)/ginkgo
 GOFMT   = gofmt
 GOLINT  = $(BIN)/golint
@@ -15,32 +16,41 @@ list: ; $(info $(MARKER) listing all go-distributed demos...) @ ## List all go-d
 		echo $$(basename $$d); \
 	 done
 
+.PHONY: dependencies
+dependencies: ; $(info $(MARKER) install dependencies...) @ ## Install dependencies
+	@$(GET) -u github.com/onsi/ginkgo/ginkgo; \
+	$(GET) -u github.com/onsi/gomega/...; \
+	$(GET) -u golang.org/x/lint/golint
+
+.PHONY: check
+check: fmt lint vet test; @ ## Run fmt, lint, vet, and test
+
 .PHONY: test
-test: ; $(info shell printf $(MARKER) running tests..) @ ## Run tests for all demos
+test: ; $(info $(MARKER) running tests...) @ ## Run tests for all demos
 	@for d in $$($(GO) list -f '{{.Dir}}' ./... | grep -v /vendor/); do \
 		$(GOTEST) -cover $$d; \
 	 done
 
 .PHONY: lint
-lint: ; $(info $(MARKER) running golint…) @ ## Run golint over all demo sources
+lint: ; $(info $(MARKER) running golint...) @ ## Run golint over all demo sources
 	@for d in $$($(GO) list -f '{{.Dir}}' ./... | grep -v /vendor/); do \
 		$(GOLINT) $${d}; \
 	done
 
 .PHONY: vet
-vet: ; $(info $(MARKER) running vet…) @ ## Run go vet for all demo sources
+vet: ; $(info $(MARKER) running vet...) @ ## Run go vet for all demo sources
 	@for d in $$($(GO) list -f '{{.Dir}}' ./... | grep -v /vendor/); do \
 		$(GOVET) $${d}/*.go;  \
 	done
 
 .PHONY: fmt
-fmt: ; $(info $(MARKER) running gofmt…) @ ## Run gofmt on all demo source files
+fmt: ; $(info $(MARKER) running gofmt...) @ ## Run gofmt on all demo source files
 	@for d in $$($(GO) list -f '{{.Dir}}' ./... | grep -v /vendor/); do \
 		$(GOFMT) -l -w $$d/*.go; \
 	 done
 
 .PHONY: build
-build: ; $(info $(MARKER) building executables…) @ ## Build the apps' binary version
+build: ; $(info $(MARKER) building executables...) @ ## Build the apps' binary version
 	@for d in $$($(GO) list -f '{{.Dir}}' ./... | grep -v /vendor/); do \
 		$(GO) build \
 		-o $$(basename $$d)-$(VERSION)-$(DATE) \

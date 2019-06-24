@@ -11,7 +11,7 @@ type Client struct {
 	conn net.Conn
 }
 
-// NewClient creates a non initialized client
+// NewClient creates a ping client
 func NewClient() *Client {
 	return &Client{}
 }
@@ -24,7 +24,7 @@ func (c *Client) CallServer(msg string) (string, error) {
 		return "", err
 	}
 
-	// receive and handle message
+	// receive a message
 	message, err := bufio.NewReader(c.conn).ReadString('\n')
 	if err != nil {
 		return "", err

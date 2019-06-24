@@ -52,10 +52,11 @@ var _ = Describe("Client", func() {
 
 		BeforeEach(func() {
 			server = NewServer(testAddress)
-			server.Start()
+			err := server.Start()
+			panicOnError(err)
 
 			client = NewClient()
-			err := client.Connect(testAddress)
+			err = client.Connect(testAddress)
 			panicOnError(err)
 		})
 
@@ -69,7 +70,7 @@ var _ = Describe("Client", func() {
 		It("can send a message and receive it", func() {
 			const expectedOutput = "Hi\n"
 
-			actualOutput, err := client.CallServer("Hi")
+			actualOutput, err := client.CallServer("iH")
 			failOnError(err)
 
 			Expect(actualOutput).To(Equal(expectedOutput))
@@ -102,6 +103,12 @@ var _ = Describe("Client", func() {
 
 			Expect(capturedCode).To(Equal(1))
 		})
+
+		It("can reverse strings", func() {
+			expectedText := "sgnirts"
+			actualText := reverseString("strings")
+			Expect(actualText).To(Equal(expectedText))
+		})
 	})
 
 	Context("User Interaction", func() {
@@ -117,7 +124,7 @@ var _ = Describe("Client", func() {
 		})
 
 		It("can send messages to a server that have been given by a users", func() {
-			const expectedOutput = "Client Server Demo App\n>> Type 'quit' to stop the client (or ctrl+D)\n>> Message to server: >> Message from server: Hi\n>> Message to server: "
+			const expectedOutput = "Client Server Demo App\n>> Type 'quit' to stop the client (or ctrl+D)\n>> Message to server: >> Message from server: iH\n>> Message to server: "
 
 			err := mockStd.FinalWriteStdIn("Hi\nquit\n")
 			panicOnError(err)

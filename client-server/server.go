@@ -5,6 +5,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"net"
+	"strings"
 )
 
 // Server for a simple ping application. NOTE: The current implementation avoids synchronization of the go function and close for simplicity.
@@ -55,14 +56,13 @@ func (s *Server) run() {
 	}
 
 	log.WithError(err).Info("Server closed down")
-
 }
 
 func (s *Server) handleMessage(msg string) (err error) {
-	if s.conn != nil {
-		// send new string back to the client
-		_, err = fmt.Fprintf(s.conn, msg+"\n")
-	}
+	// reverse the string and send it back to the client
+	trimMessage := strings.TrimSuffix(msg, "\n")
+	resultMessage := reverseString(trimMessage)
+	_, err = fmt.Fprintf(s.conn, resultMessage+"\n")
 	return err
 }
 

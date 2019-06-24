@@ -3,9 +3,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.org/ottenwbe/go-distributed.svg?branch=master)](https://travis-ci.org/ottenwbe/go-distributed)
 
-In the age of cloud computing, micro services, and IoT, distributed systems are everywhere. Oftentimes the heavy lifting that distributed systems do is hidden behind layers of layers of abstractions. 
+In the age of cloud computing, micro services, and IoT, distributed systems are omnipresent. 
+Oftentimes the heavy lifting that distributed systems do is hidden behind layers of layers of abstractions. 
+To this end, we are going to lift the curtain and see how distributed systems tick. 
 
-This repository has Go implementations of distributed paradigms and algorithms. All implementations are small demo apps that show the power of distributed computing.
+This is a repository for Go implementations of distributed paradigms and algorithms. 
+All implementations are small demo apps that show the power of distributed computing.
 
 ## What paradigms/algorithms are implemented?
 
@@ -23,11 +26,12 @@ git clone https://github.com/ottenwbe/go-distributed.git
 
 ```
 .
-├── client-server   // client server demo
+├── client-server   // client server demo where the server reverses all string messages
+├── rpc             // rpc demo
 ├── go.mod          
 ├── go.sum
 ├── LICENSE         // MIT
-├── Makefile
+├── Makefile        // build all projects with make
 ├── README.md       // this
 └── vendor          // all vendored files
 ```
