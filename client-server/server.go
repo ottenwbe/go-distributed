@@ -3,23 +3,25 @@ package main
 import (
 	"bufio"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"net"
+	"sync"
+
+	log "github.com/sirupsen/logrus"
 )
 
-// Server for a simple ping application. NOTE: The current implementation avoids synchronization of the go function and close for simplicity.
+// Server for a simple ping application.
 type Server struct {
 	listenAddress string
 	listener      net.Listener
-	conn          net.Conn
-	closed        bool
+	quit          chan struct{}
+	wg            sync.WaitGroup
 }
 
 // NewServer creates a simple server object and initializes the address the server should listen on
 func NewServer(listenAddress string) *Server {
 	return &Server{
-		closed:        true,
 		listenAddress: listenAddress,
+		quit:          make(chan struct{}),
 	}
 }
 
@@ -27,56 +29,74 @@ func NewServer(listenAddress string) *Server {
 func (s *Server) Start() error {
 	var err error
 
-	s.closed = false
-
 	s.listener, err = net.Listen("tcp", s.listenAddress)
 	if err != nil {
 		return err
 	}
 
-	go s.run()
+	s.wg.Go(s.serve)
 
 	log.Infof("Ping server started and is listening on port %v", s.listenAddress)
 
 	return nil
 }
 
-func (s *Server) run() {
-	var err error
-	s.conn, err = s.listener.Accept()
-	if err == nil {
-		reader := bufio.NewReader(s.conn)
-		for !s.closed && err == nil {
-			var msg string
-			// listen for new messages
-			msg, err = reader.ReadString('\n')
-			err = s.handleMessage(msg)
+func (s *Server) serve() {
+
+	for {
+		select {
+		case <-s.quit:
+			log.Info("Server shutting down...")
+			return
+		default:
 		}
+
+		conn, err := s.listener.Accept()
+		if err != nil {
+			// Check if the error is due to the listener being closed.
+			// If so, it's a clean shutdown.
+			select {
+			case <-s.quit:
+				return
+			default:
+				log.WithError(err).Error("Failed to accept connection")
+			}
+			continue
+		}
+
+		s.wg.Go(func() {
+			s.handleConnection(conn)
+		})
 	}
-
-	log.WithError(err).Info("Server closed down")
-
 }
 
-func (s *Server) handleMessage(msg string) (err error) {
-	if s.conn != nil {
+func (s *Server) handleConnection(conn net.Conn) {
+	defer conn.Close()
+	reader := bufio.NewReader(conn)
+
+	for {
+		msg, err := reader.ReadString('\n')
+		if err != nil {
+			// Connection closed or other error
+			return
+		}
 		// send new string back to the client
-		_, err = fmt.Fprintf(s.conn, msg+"\n")
+		fmt.Fprintf(conn, "%s", msg)
 	}
-	return err
 }
 
 // Close shuts down the server
 func (s *Server) Close() error {
-	var err error
-
-	if !s.closed {
-		s.closed = true
-		if s.conn != nil {
-			err = s.conn.Close()
-		}
-		err = s.listener.Close()
+	select {
+	case <-s.quit:
+		return nil
+	default:
+		close(s.quit)
 	}
-
-	return err
+	if s.listener != nil {
+		err := s.listener.Close()
+		s.wg.Wait()
+		return err
+	}
+	return nil
 }

@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ottenwbe/go-distributed.svg?branch=master)](https://travis-ci.org/ottenwbe/go-distributed)
 
-Go implementations of distributed paradigms and algorithms.
+This repository provides demo and examples of Go implementations of distributed paradigms and algorithms.
 
 ## What paradigms/algorithms are implemented?
 
@@ -12,36 +12,57 @@ Go implementations of distributed paradigms and algorithms.
 
 Get this repo 
 
-```
+```bash
 git clone https://github.com/ottenwbe/go-distributed.git
 ```
 
 ### Structure
 
-```
+```text
 .
-├── client-server   // client server demo
-├── go.mod          
+├── client-server   # Client/Server pattern implementation
+├── go.mod
 ├── go.sum
-├── LICENSE         // MIT
-├── Makefile
-├── README.md       // this
-└── vendor          // all vendored files
+├── LICENSE
+└── README.md
 ```
  
-# Build
+ 
+# How to Run
 
+The `client-server` example can be run in different modes using the `-mode` flag.
+
+### Demo Mode (Default)
+
+This runs both the client and server in the same process for a quick demonstration.
+
+```bash
+go run ./client-server
 ```
-go build -o clientServer client-server/*.go 
+
+### Server & Client Mode
+
+To demonstrate the distributed nature, run the server and client in separate terminals.
+
+```bash
+# Terminal 1: Run the server
+go run ./client-server -mode server
+
+# Terminal 2: Run the client
+go run ./client-server -mode client
 ```
 
 # Test
 
-We use [ginkgo](https://github.com/onsi/ginkgo) for testing.
+We use ginkgo for testing.
 
+
+```bash
+go test ./...
 ```
-go get -u github.com/onsi/ginkgo/ginkgo  
-go get -u github.com/onsi/gomega/...     
-cd client-server
-ginkgo
+
+or 
+
+```bash
+ginkgo  -v ./...
 ```

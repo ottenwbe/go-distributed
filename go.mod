@@ -1,16 +1,24 @@
 module github.com/ottenwbe/go-distributed
 
-go 1.12
+go 1.25.0
 
 require (
-	github.com/onsi/ginkgo v1.8.0
-	github.com/onsi/gomega v1.5.0
-	github.com/pkg/errors v0.8.1
-	github.com/sirupsen/logrus v1.4.2
-	golang.org/x/crypto v0.0.0-20190618222545-ea8f1a30c443 // indirect
-	golang.org/x/lint v0.0.0-20190409202823-959b441ac422 // indirect
-	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
-	golang.org/x/sys v0.0.0-20190620070143-6f217b454f45 // indirect
-	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20190620191750-1fa568393b23 // indirect
+	github.com/onsi/ginkgo/v2 v2.28.1
+	github.com/onsi/gomega v1.39.1
+	github.com/sirupsen/logrus v1.9.4
+)
+
+require (
+	github.com/Masterminds/semver/v3 v3.4.0 // indirect
+	github.com/go-logr/logr v1.4.3 // indirect
+	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
+	github.com/google/pprof v0.0.0-20260115054156-294ebfa9ad83 // indirect
+	go.yaml.in/yaml/v3 v3.0.4 // indirect
+	golang.org/x/mod v0.32.0 // indirect
+	golang.org/x/net v0.51.0 // indirect
+	golang.org/x/sync v0.19.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
+	golang.org/x/text v0.34.0 // indirect
+	golang.org/x/tools v0.41.0 // indirect
 )

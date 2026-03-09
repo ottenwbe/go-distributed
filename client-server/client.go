@@ -2,13 +2,16 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"net"
+	"time"
 )
 
 // Client is a simple ping server
 type Client struct {
-	conn net.Conn
+	conn   net.Conn
+	reader *bufio.Reader
 }
 
 // NewClient creates a non initialized client
@@ -17,15 +20,21 @@ func NewClient() *Client {
 }
 
 // CallServer sends a message to the server and returns the corresponding response
-func (c *Client) CallServer(msg string) (string, error) {
+func (c *Client) CallServer(ctx context.Context, msg string) (string, error) {
+	// Set deadline based on context
+	if deadline, ok := ctx.Deadline(); ok {
+		c.conn.SetDeadline(deadline)
+		defer c.conn.SetDeadline(time.Time{})
+	}
+
 	// send a message
-	_, err := fmt.Fprintf(c.conn, msg+"\n")
+	_, err := fmt.Fprintf(c.conn, "%s\n", msg)
 	if err != nil {
 		return "", err
 	}
 
 	// receive and handle message
-	message, err := bufio.NewReader(c.conn).ReadString('\n')
+	message, err := c.reader.ReadString('\n')
 	if err != nil {
 		return "", err
 	}
@@ -37,7 +46,11 @@ func (c *Client) CallServer(msg string) (string, error) {
 func (c *Client) Connect(serverAddress string) (err error) {
 	// connect to server
 	c.conn, err = net.Dial("tcp", serverAddress)
-	return err
+	if err != nil {
+		return err
+	}
+	c.reader = bufio.NewReader(c.conn)
+	return nil
 }
 
 // Close shuts down the connection to the server

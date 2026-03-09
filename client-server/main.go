@@ -1,62 +1,97 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
+	"context"
+	"flag"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
-const serverAddress = ":8888"
-
 func main() {
-	fmt.Println("Client Server Demo App")
+	mode := flag.String("mode", "demo", "Mode to run: 'server', 'client', or 'demo'")
+	port := flag.String("port", ":8080", "Port to listen/connect to")
+	flag.Parse()
 
-	server := NewServer(serverAddress)
-	err := server.Start()
-	exitOnError(err, 1)
-	defer closeServer(server)
-
-	client := NewClient()
-	err = client.Connect(serverAddress)
-	exitOnError(err, 2)
-	defer closeClient(client)
-
-	// exchange messages with the ping server
-	err = askInLoop("Message to server", func(msg string) {
-		message, err := client.CallServer(msg)
-		exitOnError(err, 3)
-		fmt.Printf(">> Message from server: %v", message)
-	})
-	exitOnError(err, 4)
-
-}
-
-func closeServer(server *Server) {
-	err := server.Close()
-	exitOnError(err, 5)
-}
-
-func closeClient(client *Client) {
-	err := client.Close()
-	exitOnError(err, 6)
-}
-
-func askInLoop(question string, answerHandler func(answer string)) error {
-	const stopIndicator = "quit"
-	var (
-		scanner = bufio.NewScanner(os.Stdin)
-		run     = true
-	)
-	fmt.Printf(">> Type '%v' to stop the client (or ctrl+D)\n", stopIndicator)
-	fmt.Printf(">> %v: ", question)
-	for run && scanner.Scan() {
-		msg := scanner.Text()
-		if msg == stopIndicator {
-			run = false
-		} else {
-			answerHandler(msg)
-			fmt.Printf(">> %v: ", question)
-		}
+	switch *mode {
+	case "server":
+		runServer(*port)
+	case "client":
+		runClient(*port)
+	case "demo":
+		runDemo(*port)
+	default:
+		log.Fatalf("Unknown mode: %s", *mode)
 	}
-	return scanner.Err()
+}
+
+func runServer(port string) {
+	server := NewServer(port)
+	if err := server.Start(); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
+	defer server.Close()
+
+	// Wait for interrupt signal to gracefully shutdown the server
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Info("Shutting down server...")
+}
+
+func runClient(port string) {
+	client := NewClient()
+	if err := client.Connect("localhost" + port); err != nil {
+		log.Fatalf("Failed to connect client: %v", err)
+	}
+	defer client.Close()
+
+	msg := "Hello Distributed World"
+	log.Infof("Client sending: %q", msg)
+
+	// Use a context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	response, err := client.CallServer(ctx, msg)
+	if err != nil {
+		log.Fatalf("CallServer failed: %v", err)
+	}
+
+	log.Infof("Client received: %q", response)
+}
+
+func runDemo(port string) {
+	// 1. Start the Server
+	server := NewServer(port)
+	if err := server.Start(); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
+	defer server.Close()
+
+	time.Sleep(100 * time.Millisecond)
+
+	// 2. Create the Client
+	client := NewClient()
+	if err := client.Connect("localhost" + port); err != nil {
+		log.Fatalf("Failed to connect client: %v", err)
+	}
+	defer client.Close()
+
+	// 3. Send a message
+	msg := "Hello Distributed World"
+	log.Infof("Client sending: %q", msg)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	response, err := client.CallServer(ctx, msg)
+	if err != nil {
+		log.Fatalf("CallServer failed: %v", err)
+	}
+
+	log.Infof("Client received: %q", response)
 }
