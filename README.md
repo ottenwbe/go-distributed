@@ -7,6 +7,7 @@ This repository provides demo and examples of Go implementations of distributed 
 ## What paradigms/algorithms are implemented?
 
 * client / server
+* rpc (Remote Procedure Call)
 
 ## Develop
 
@@ -21,6 +22,7 @@ git clone https://github.com/ottenwbe/go-distributed.git
 ```text
 .
 ├── client-server   # Client/Server pattern implementation
+├── rpc             # RPC pattern implementation
 ├── go.mod
 ├── go.sum
 ├── LICENSE
