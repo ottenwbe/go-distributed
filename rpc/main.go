@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
@@ -41,16 +42,19 @@ func runServer(port string) {
 }
 
 func runClient(port string) {
-	client, err := NewClient("localhost" + port)
+	client, err := NewClient("localhost"+port, 2*time.Second)
 	if err != nil {
 		log.Fatalf("Failed to connect to RPC server: %v", err)
 	}
 	defer client.Close()
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	a, b := 7, 8
 	log.Printf("Client calling Arith.Multiply with %d and %d", a, b)
 
-	result, err := client.Multiply(a, b)
+	result, err := client.Multiply(ctx, a, b)
 	if err != nil {
 		log.Fatalf("RPC call failed: %v", err)
 	}

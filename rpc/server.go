@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"net"
 	"net/rpc"
@@ -33,6 +34,19 @@ func startServer(port string) (net.Listener, error) {
 		return nil, err
 	}
 	log.Printf("RPC server listening on %s", listener.Addr())
-	go rpc.Accept(listener)
+	go func() {
+		for {
+			conn, err := listener.Accept()
+			if err != nil {
+				// If the listener is closed, the error is expected, so we exit gracefully.
+				if errors.Is(err, net.ErrClosed) {
+					return
+				}
+				log.Printf("RPC server accept error: %v", err)
+				return
+			}
+			go rpc.ServeConn(conn)
+		}
+	}()
 	return listener, nil
 }
