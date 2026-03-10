@@ -1,6 +1,6 @@
 # go-distributed
 
-[![CI](https://github.com/ottenwbe/go-distributed/actions/workflows/ci.yml/badge.svg)](https://github.com/ottenwbe/go-distributed/actions/workflows/ci.yml)
+[![Go](https://github.com/ottenwbe/go-distributed/actions/workflows/go.yml/badge.svg)](https://github.com/ottenwbe/go-distributed/actions/workflows/go.yml)
 
 This repository provides demo and examples of Go implementations of distributed paradigms and algorithms.
 
